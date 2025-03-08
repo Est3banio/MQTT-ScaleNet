@@ -1,0 +1,188 @@
+version: '3.8'
+
+services:
+  # MQTT Broker
+  mqtt-broker:
+    build: ./broker
+    container_name: mqtt-broker
+    ports:
+      - "1883:1883"  # MQTT port
+      - "9001:9001"  # WebSockets port
+    volumes:
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-log:/mosquitto/log
+    networks:
+      - mqtt_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-t", "$$(hostname)/healthcheck", "-C", "1", "-i", "healthcheck", "-W", "3"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Java Sinus Publisher 1
+  java-publisher-1:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: java-publisher-1
+    depends_on:
+      - mqtt-broker
+    environment:
+      - MQTT_BROKER=tcp://mqtt-broker:1883
+      - MQTT_PUB_TOPIC=sensoren/java1
+      - MQTT_SUB_TOPIC=feedback/java1
+    networks:
+      - mqtt_network
+    restart: unless-stopped
+
+  # Java Sinus Publisher 2
+  java-publisher-2:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: java-publisher-2
+    depends_on:
+      - mqtt-broker
+    environment:
+      - MQTT_BROKER=tcp://mqtt-broker:1883
+      - MQTT_PUB_TOPIC=sensoren/java2
+      - MQTT_SUB_TOPIC=feedback/java2
+    networks:
+      - mqtt_network
+    restart: unless-stopped
+
+  # Python Sinus Publisher
+  python-publisher:
+    build: ./python-publisher
+    container_name: python-publisher
+    depends_on:
+      - mqtt-broker
+    environment:
+      - MQTT_BROKER=mqtt-broker
+      - MQTT_PUB_TOPIC=sensoren/python1
+      - MQTT_CLIENT_ID=PythonPublisher
+    networks:
+      - mqtt_network
+    restart: unless-stopped
+
+  # Temperature Publisher
+  temp-publisher:
+    build: ./python-temp-publisher
+    container_name: temp-publisher
+    depends_on:
+      - mqtt-broker
+    environment:
+      - MQTT_BROKER=mqtt-broker
+      - MQTT_PUB_TOPIC=sensoren/temperature
+      - MQTT_FEEDBACK_TOPIC=feedback/temperature
+      - BASE_TEMP=22.0
+      - DAY_VARIATION=8.0
+    networks:
+      - mqtt_network
+    restart: unless-stopped
+
+  # Humidity Publisher
+  humidity-publisher:
+    build: ./python-humidity-publisher
+    container_name: humidity-publisher
+    depends_on:
+      - mqtt-broker
+    environment:
+      - MQTT_BROKER=mqtt-broker
+      - MQTT_PUB_TOPIC=sensoren/humidity
+      - MQTT_FEEDBACK_TOPIC=feedback/humidity
+      - BASE_HUMIDITY=65.0
+    networks:
+      - mqtt_network
+    restart: unless-stopped
+
+  # Data Processor
+  data-processor:
+    build: ./python-processor
+    container_name: data-processor
+    depends_on:
+      - mqtt-broker
+      - temp-publisher
+      - humidity-publisher
+    environment:
+      - MQTT_BROKER=mqtt-broker
+      - MQTT_TEMP_TOPIC=sensoren/temperature
+      - MQTT_HUMIDITY_TOPIC=sensoren/humidity
+      - MQTT_OUTPUT_TOPIC=sensoren/processed
+      - MQTT_FEEDBACK_TOPIC=feedback/processor
+      - PUBLISH_INTERVAL=1.0
+    networks:
+      - mqtt_network
+    restart: unless-stopped
+
+  # Python Subscriber for data monitoring
+  python-subscriber:
+    build: ./python-subscriber
+    container_name: python-subscriber
+    depends_on:
+      - mqtt-broker
+    environment:
+      - MQTT_BROKER=mqtt-broker
+      - MQTT_SUB_TOPIC=sensoren/+
+      - MQTT_FEEDBACK_TOPIC=feedback/python1
+      - MQTT_CLIENT_ID=PythonSubscriber
+    networks:
+      - mqtt_network
+    restart: unless-stopped
+
+  # MQTT Logger
+  mqtt-logger:
+    build: ./python-logger
+    container_name: mqtt-logger
+    depends_on:
+      - mqtt-broker
+    environment:
+      - MQTT_BROKER=mqtt-broker
+      - MQTT_TOPIC_FILTER=#
+      - MQTT_FEEDBACK_TOPIC=feedback/logger
+    volumes:
+      - mqtt-logs:/app/logs
+    networks:
+      - mqtt_network
+    restart: unless-stopped
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mqtt-broker
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-mqtt-datasource
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    networks:
+      - mqtt_network
+    restart: unless-stopped
+
+  # MQTT CLI for testing/debugging
+  mqtt-cli:
+    image: hivemq/mqtt-cli
+    container_name: mqtt-cli
+    depends_on:
+      - mqtt-broker
+    command: shell
+    tty: true
+    stdin_open: true
+    networks:
+      - mqtt_network
+
+networks:
+  mqtt_network:
+    driver: bridge
+
+volumes:
+  mosquitto-data:
+  mosquitto-log:
+  grafana-storage:
+  mqtt-logs:
