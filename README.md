@@ -1,52 +1,52 @@
-# MQTT-ScaleNet: Distributed MQTT System with Monitoring
+# MQTT-ScaleNet: Verteiltes MQTT-System mit Monitoring
 
-This project demonstrates a complete distributed MQTT system with Java and Python components publishing and subscribing to an MQTT broker. The system includes multiple sensor publishers, subscribers, a dedicated MQTT broker, visualization capabilities with data processing and logging, and comprehensive monitoring with Prometheus and Node Exporter.
+In diesem Projekt haben wir ein komplettes verteiltes MQTT-System mit Java- und Python-Komponenten implementiert, die über einen MQTT-Broker kommunizieren. Das System umfasst mehrere Sensor-Publisher, Subscriber, einen dedizierten MQTT-Broker, Visualisierungsfunktionen mit Datenverarbeitung und Protokollierung sowie ein umfassendes Monitoring mit Prometheus und Node Exporter.
 
-## Components
+## Komponenten
 
-### Core Components
-- **MQTT Broker**: Eclipse Mosquitto broker for message routing
-- **Java Publishers**: Multiple Java-based sine wave publishers 
-- **Python Sine Publisher**: Python-based sine wave publisher
-- **Temperature Publisher**: Simulates temperature readings with daily cycles
-- **Humidity Publisher**: Simulates humidity readings with daily cycles
-- **Data Processor**: Combines temperature and humidity to calculate heat index and dew point
-- **Python Subscriber**: Python-based subscriber that listens to all sensor topics
-- **MQTT Logger**: Records all MQTT messages with rotating logs
-- **Grafana**: Visualization tool for real-time sensor data
-- **MQTT CLI**: Command-line interface for testing and debugging
+### Kernkomponenten
+- **MQTT-Broker**: Eclipse Mosquitto Broker für das Message-Routing
+- **Java-Publisher**: Mehrere Java-basierte Sinuswellen-Publisher
+- **Python-Sinuswellen-Publisher**: Python-basierter Sinuswellen-Publisher
+- **Temperatur-Publisher**: Simuliert Temperaturmessungen mit Tageszyklen
+- **Feuchtigkeits-Publisher**: Simuliert Feuchtigkeitsmessungen mit Tageszyklen
+- **Datenprozessor**: Kombiniert Temperatur und Luftfeuchtigkeit zur Berechnung von Hitzeindex und Taupunkt
+- **Python-Subscriber**: Python-basierter Subscriber, der auf alle Sensor-Topics lauscht
+- **MQTT-Logger**: Zeichnet alle MQTT-Nachrichten mit rotierenden Logs auf
+- **Grafana**: Visualisierungstool für Echtzeit-Sensordaten
+- **MQTT-CLI**: Kommandozeilen-Interface für Tests und Debugging
 
-### Monitoring Components
-- **Prometheus**: Time-series database for metrics collection and monitoring
-- **Node Exporter**: System metrics collector for host-level monitoring
-- **MQTT Exporter**: Metrics exporter for Mosquitto broker statistics
-- **Grafana Dashboards**: Preconfigured dashboards for system and MQTT metrics
+### Monitoring-Komponenten
+- **Prometheus**: Zeitreihen-Datenbank für Metrik-Sammlung und Monitoring
+- **Node Exporter**: System-Metrik-Sammler für Host-Level-Monitoring
+- **MQTT Exporter**: Metrik-Exporter für Mosquitto-Broker-Statistiken
+- **Grafana Dashboards**: Vorkonfigurierte Dashboards für System- und MQTT-Metriken
 
-## Requirements
+## Anforderungen
 
-- Docker and Docker Compose
-- (For local development only) Java 11+, Maven, Python 3.9+
+- Docker und Docker Compose
+- (Nur für lokale Entwicklung) Java 11+, Maven, Python 3.9+
 
-## Features
+## Funktionen
 
-- Multiple sensor types publishing data to configurable topics
-- Subscribers receiving and processing data from multiple sources
-- Data processing that combines inputs to generate derived metrics
-- Complete message logging with persistent storage
-- Stop command handling for graceful shutdown of components
-- Containerized deployment with Docker and Docker Compose
-- Persistent storage for MQTT messages, logs, and Grafana dashboards
-- Network isolation between components for security
-- Visualization capabilities through Grafana
-- Comprehensive monitoring with Prometheus, Node Exporter, and MQTT Exporter
-- Testing framework to verify system functionality
+- Mehrere Sensortypen, die Daten zu konfigurierbaren Topics veröffentlichen
+- Subscriber, die Daten von mehreren Quellen empfangen und verarbeiten
+- Datenverarbeitung, die Eingaben kombiniert, um abgeleitete Metriken zu generieren
+- Vollständige Nachrichtenprotokollierung mit persistentem Speicher
+- Stopp-Befehlsbehandlung für sauberes Herunterfahren von Komponenten
+- Containerisierte Bereitstellung mit Docker und Docker Compose
+- Persistenter Speicher für MQTT-Nachrichten, Logs und Grafana-Dashboards
+- Netzwerkisolierung zwischen Komponenten für erhöhte Sicherheit
+- Visualisierungsfunktionen durch Grafana
+- Umfassendes Monitoring mit Prometheus, Node Exporter und MQTT Exporter
+- Test-Framework zur Überprüfung der Systemfunktionalität
 
-## System Architecture
+## Systemarchitektur
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Java Sine      │     │  Python Sine    │     │  Temperature    │
-│  Publishers     │     │  Publisher      │     │  Publisher      │
+│  Java Sinus     │     │  Python Sinus   │     │  Temperatur     │
+│  Publisher      │     │  Publisher      │     │  Publisher      │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
          │                      │                       │
          │                      │                       │
@@ -60,14 +60,14 @@ This project demonstrates a complete distributed MQTT system with Java and Pytho
          │                       │                      │
          │                       │                      │
 ┌────────▼──────────┐    ┌──────▼───────────┐    ┌─────▼───────────┐
-│  Subscriber       │    │  Data Processor  │    │  Humidity       │
+│  Subscriber       │    │  Datenprozessor  │    │  Feuchtigkeits- │
 │                   │    │                  │    │  Publisher      │
 └───────────────────┘    └──────────────────┘    └─────────────────┘
                                │      
                                │      
                          ┌─────▼──────────┐     ┌─────────────────┐
                          │  MQTT Logger   │     │  Grafana        │
-                         │                │     │  Visualization  │
+                         │                │     │  Visualisierung │
                          └────────────────┘     └─────────────────┘
                                                        ▲
                                                        │
@@ -83,316 +83,316 @@ This project demonstrates a complete distributed MQTT system with Java and Pytho
         └─────────────┘         └─────────────┘
 ```
 
-## Project Structure
+## Projektstruktur
 
 ```
 .
-├── broker/                       # MQTT broker configuration
+├── broker/                       # MQTT-Broker-Konfiguration
 │   ├── Dockerfile
 │   └── mosquitto.conf
-├── python-publisher/             # Python sine wave publisher
+├── python-publisher/             # Python-Sinuswellen-Publisher
 │   ├── Dockerfile
 │   ├── publisher.py
 │   └── requirements.txt
-├── python-subscriber/            # Python subscriber component
+├── python-subscriber/            # Python-Subscriber-Komponente
 │   ├── Dockerfile
 │   ├── subscriber.py
 │   └── requirements.txt
-├── python-temp-publisher/        # Temperature publisher
+├── python-temp-publisher/        # Temperatur-Publisher
 │   ├── Dockerfile
 │   ├── temp_publisher.py
 │   └── requirements.txt
-├── python-humidity-publisher/    # Humidity publisher
+├── python-humidity-publisher/    # Feuchtigkeits-Publisher
 │   ├── Dockerfile
 │   ├── humidity_publisher.py
 │   └── requirements.txt
-├── python-processor/             # Data processor 
+├── python-processor/             # Datenprozessor
 │   ├── Dockerfile
 │   ├── processor.py
 │   └── requirements.txt
-├── python-logger/                # MQTT message logger
+├── python-logger/                # MQTT-Nachrichten-Logger
 │   ├── Dockerfile
 │   ├── logger.py
 │   └── requirements.txt
-├── mqtt-exporter/                # MQTT metrics exporter
+├── mqtt-exporter/                # MQTT-Metriken-Exporter
 │   └── Dockerfile
-├── grafana/                      # Grafana configuration
+├── grafana/                      # Grafana-Konfiguration
 │   └── provisioning/            
-│       └── datasources/          # Grafana datasource configuration
-│           └── prometheus.yml    # Prometheus datasource config
-├── src/                          # Java publisher source code
-├── Dockerfile                    # Java publisher Dockerfile
-├── pom.xml                       # Maven configuration
-├── docker-compose.yml            # Docker Compose configuration
-├── prometheus.yml                # Prometheus configuration
-├── test-system.sh                # System testing script
+│       └── datasources/          # Grafana-Datenquellen-Konfiguration
+│           └── prometheus.yml    # Prometheus-Datenquelle-Konfiguration
+├── src/                          # Java-Publisher-Quellcode
+├── Dockerfile                    # Java-Publisher-Dockerfile
+├── pom.xml                       # Maven-Konfiguration
+├── docker-compose.yml            # Docker-Compose-Konfiguration
+├── prometheus.yml                # Prometheus-Konfiguration
+├── test-system.sh                # System-Test-Skript
 └── README.md
 ```
 
-## Data Flow
+## Datenfluss
 
-1. **Sensor Data Publishers**:
-   - Java publishers generate sine wave data
-   - Python sine publisher generates sine wave data
-   - Temperature publisher simulates temperature readings with daily cycles
-   - Humidity publisher simulates humidity readings with daily cycles
+1. **Sensor-Daten-Publisher**:
+   - Java-Publisher generieren Sinuswellendaten
+   - Python-Sinus-Publisher generiert Sinuswellendaten
+   - Temperatur-Publisher simuliert Temperaturmessungen mit Tageszyklen
+   - Feuchtigkeits-Publisher simuliert Feuchtigkeitsmessungen mit Tageszyklen
 
-2. **Message Broker**:
-   - All messages pass through the MQTT broker
-   - Mosquitto handles message routing between components
+2. **Message-Broker**:
+   - Alle Nachrichten laufen über den MQTT-Broker
+   - Mosquitto übernimmt das Nachrichtenrouting zwischen den Komponenten
 
-3. **Data Consumers**:
-   - Subscriber listens to sensor topics and displays data
-   - Data processor combines temperature and humidity data to calculate:
-     - Heat index (feels-like temperature)
-     - Dew point
-   - Logger records all MQTT messages with timestamps
+3. **Datenkonsumenten**:
+   - Subscriber lauscht auf Sensor-Topics und zeigt Daten an
+   - Datenprozessor kombiniert Temperatur- und Feuchtigkeitsdaten zur Berechnung von:
+     - Hitzeindex (gefühlte Temperatur)
+     - Taupunkt
+   - Logger zeichnet alle MQTT-Nachrichten mit Zeitstempeln auf
 
-4. **Visualization**:
-   - Grafana connects to MQTT broker to display real-time data
-   - Multiple dashboards can be created for different data types
+4. **Visualisierung**:
+   - Grafana verbindet sich mit dem MQTT-Broker, um Echtzeit-Daten anzuzeigen
+   - Mehrere Dashboards können für verschiedene Datentypen erstellt werden
 
 5. **Monitoring**:
-   - Node Exporter collects system metrics (CPU, memory, network, disk)
-   - MQTT Exporter collects Mosquitto broker metrics
-   - Prometheus stores all metrics with timestamps
-   - Grafana visualizes system and MQTT metrics
+   - Node Exporter sammelt Systemmetriken (CPU, Speicher, Netzwerk, Festplatte)
+   - MQTT Exporter sammelt Mosquitto-Broker-Metriken
+   - Prometheus speichert alle Metriken mit Zeitstempeln
+   - Grafana visualisiert System- und MQTT-Metriken
 
-## Building and Running the Distributed System
+## Aufbau und Ausführung des verteilten Systems
 
-### Using Docker Compose (Recommended)
+### Mit Docker Compose (Empfohlen)
 
-The entire system can be built and launched with Docker Compose:
+Das gesamte System kann mit Docker Compose erstellt und gestartet werden:
 
 ```bash
-# Build and start all services
+# Alle Services erstellen und starten
 docker-compose up -d --build
 
-# Check container status
+# Container-Status prüfen
 docker-compose ps
 
-# Stop all services
+# Alle Services stoppen
 docker-compose down
 
-# Stop all services and remove volumes
+# Alle Services stoppen und Volumes löschen
 docker-compose down -v
 ```
 
-### System Testing
+### Systemtests
 
-A test script is provided to verify the system is working correctly:
+Ein Test-Skript wird bereitgestellt, um zu überprüfen, ob das System korrekt funktioniert:
 
 ```bash
-# Make sure the script is executable
+# Sicherstellen, dass das Skript ausführbar ist
 chmod +x test-system.sh
 
-# Run the system tests
+# Systemtests ausführen
 ./test-system.sh
 ```
 
-The test script checks:
-- All services are running
-- MQTT broker connectivity
-- Sensor data publishing
-- Grafana availability
-- Logger functionality
-- Stop command handling
+Das Test-Skript überprüft:
+- Alle Services laufen
+- MQTT-Broker-Konnektivität
+- Sensordatenveröffentlichung
+- Grafana-Verfügbarkeit
+- Logger-Funktionalität
+- Stopp-Befehlsbehandlung
 
-### Component-Specific Commands
+### Komponentenspezifische Befehle
 
 ```bash
-# View logs of a specific service
+# Logs eines bestimmten Services anzeigen
 docker-compose logs java-publisher-1
 docker-compose logs python-subscriber
 
-# Restart a specific service
+# Einen bestimmten Service neu starten
 docker-compose restart python-publisher
 
-# Scale a service (add more instances)
+# Einen Service skalieren (mehr Instanzen hinzufügen)
 docker-compose up -d --scale python-publisher=3
 ```
 
-## Accessing Components
+## Zugriff auf Komponenten
 
-- **MQTT Broker**: Available on port 1883 for MQTT and 9001 for WebSockets
-- **Grafana**: Available at http://localhost:3000 (default credentials: admin/admin)
-- **Prometheus**: Available at http://localhost:9090
-- **Node Exporter Metrics**: Available at http://localhost:9100/metrics
-- **MQTT Exporter Metrics**: Available at http://localhost:9234/metrics
-- **MQTT CLI**: Access via `docker-compose exec mqtt-cli sh`
+- **MQTT-Broker**: Verfügbar auf Port 1883 für MQTT und 9001 für WebSockets
+- **Grafana**: Verfügbar unter http://localhost:3000 (Standardanmeldedaten: admin/admin)
+- **Prometheus**: Verfügbar unter http://localhost:9090
+- **Node Exporter Metriken**: Verfügbar unter http://localhost:9100/metrics
+- **MQTT Exporter Metriken**: Verfügbar unter http://localhost:9234/metrics
+- **MQTT CLI**: Zugriff über `docker-compose exec mqtt-cli sh`
 
-## Testing the System
+## Testen des Systems
 
-### Using the MQTT CLI
+### Mit der MQTT CLI
 
 ```bash
-# Connect to the CLI container
+# Verbindung zum CLI-Container herstellen
 docker-compose exec mqtt-cli sh
 
-# Subscribe to all sensor topics
+# Alle Sensor-Topics abonnieren
 mqtt sub -h mqtt-broker -t "sensoren/#" -v
 
-# Send a message to a specific topic
+# Eine Nachricht an ein bestimmtes Topic senden
 mqtt pub -h mqtt-broker -t "sensoren/test" -m "0.123456"
 
-# Send stop command to stop a specific publisher
+# Stopp-Befehl senden, um einen bestimmten Publisher zu stoppen
 mqtt pub -h mqtt-broker -t "feedback/java1" -m "stop"
 ```
 
-### Using External MQTT Clients
+### Mit externen MQTT-Clients
 
-You can also connect to the broker from outside Docker using tools like MQTT Explorer, MQTT.fx, or Mosquitto clients:
+Man kann auch von außerhalb Docker mit Tools wie MQTT Explorer, MQTT.fx oder Mosquitto-Clients eine Verbindung zum Broker herstellen:
 
 ```bash
-# Subscribe using mosquitto_sub
+# Abonnieren mit mosquitto_sub
 mosquitto_sub -h localhost -t "sensoren/#" -v
 
-# Publish using mosquitto_pub
+# Veröffentlichen mit mosquitto_pub
 mosquitto_pub -h localhost -t "feedback/python1" -m "stop"
 ```
 
-## Visualization and Monitoring
+## Visualisierung und Monitoring
 
-### Sensor Data Visualization with Grafana
+### Sensordaten-Visualisierung mit Grafana
 
-1. Access Grafana at http://localhost:3000
-2. Login with default credentials (admin/admin)
-3. Add the MQTT data source:
-   - Go to Configuration > Data Sources > Add data source
-   - Select "MQTT" (install plugin if needed)
-   - Set broker URL to "mqtt-broker:1883" or "localhost:1883" (if accessing externally)
-4. Create a new dashboard:
-   - Add panels to visualize sensor data
-   - Configure subscriptions to "sensoren/+"
-   - Set refresh rate for real-time updates
+1. Grafana unter http://localhost:3000 aufrufen
+2. Mit Standardanmeldedaten anmelden (admin/admin)
+3. MQTT-Datenquelle hinzufügen:
+   - Konfiguration > Datenquellen > Datenquelle hinzufügen
+   - "MQTT" auswählen (Plugin bei Bedarf installieren)
+   - Broker-URL auf "mqtt-broker:1883" oder "localhost:1883" (bei externem Zugriff) setzen
+4. Neues Dashboard erstellen:
+   - Panels hinzufügen, um Sensordaten zu visualisieren
+   - Abonnements für "sensoren/+" konfigurieren
+   - Aktualisierungsrate für Echtzeit-Updates einstellen
 
-### System Monitoring with Prometheus and Grafana
+### System-Monitoring mit Prometheus und Grafana
 
-1. Access Prometheus at http://localhost:9090
-   - View targets at http://localhost:9090/targets to ensure all exporters are up
-   - Use PromQL to query metrics directly
+1. Prometheus unter http://localhost:9090 aufrufen
+   - Targets unter http://localhost:9090/targets ansehen, um sicherzustellen, dass alle Exporter aktiv sind
+   - PromQL für direkte Abfragen verwenden
    
-2. Use pre-configured Grafana dashboards for system monitoring:
-   - Node Exporter dashboard for system metrics 
-   - MQTT dashboard for broker metrics
+2. Vorkonfigurierte Grafana-Dashboards für System-Monitoring verwenden:
+   - Node-Exporter-Dashboard für Systemmetriken
+   - MQTT-Dashboard für Broker-Metriken
    
-3. Create custom dashboards:
-   - Combine system metrics with MQTT metrics
-   - Set up alerts for critical thresholds
-   - Configure annotations for important events
+3. Benutzerdefinierte Dashboards erstellen:
+   - Systemmetriken mit MQTT-Metriken kombinieren
+   - Alarme für kritische Schwellenwerte einrichten
+   - Anmerkungen für wichtige Ereignisse konfigurieren
 
-## Docker Volumes
+## Docker-Volumes
 
-The system includes persistent volumes for:
-- `mosquitto-data`: Stores persistent MQTT messages
-- `mosquitto-log`: Stores MQTT broker logs
-- `grafana-storage`: Stores Grafana dashboards and configurations
-- `mqtt-logs`: Stores MQTT message logs
-- `prometheus-data`: Stores Prometheus time-series data
+Das System enthält persistente Volumes für:
+- `mosquitto-data`: Speichert persistente MQTT-Nachrichten
+- `mosquitto-log`: Speichert MQTT-Broker-Logs
+- `grafana-storage`: Speichert Grafana-Dashboards und -Konfigurationen
+- `mqtt-logs`: Speichert MQTT-Nachrichtenlogs
+- `prometheus-data`: Speichert Prometheus-Zeitreihendaten
 
-These volumes ensure data is preserved even if containers are restarted.
+Diese Volumes stellen sicher, dass Daten auch bei Neustart der Container erhalten bleiben.
 
-## Security Considerations
+## Sicherheitsüberlegungen
 
-The default configuration allows anonymous access to the MQTT broker, which is suitable for development but not for production. For production use:
+Die Standardkonfiguration erlaubt anonymen Zugriff auf den MQTT-Broker, was für die Entwicklung geeignet ist, aber nicht für die Produktion. Für den Produktionseinsatz:
 
-1. Configure MQTT authentication (edit mosquitto.conf)
-2. Use secure connections (TLS)
-3. Apply network isolation for containers
-4. Update Docker security options
-5. Set secure passwords for Grafana and Prometheus
-6. Limit exposure of monitoring endpoints
+1. MQTT-Authentifizierung konfigurieren (mosquitto.conf bearbeiten)
+2. Sichere Verbindungen verwenden (TLS)
+3. Netzwerkisolierung für Container anwenden
+4. Docker-Sicherheitsoptionen aktualisieren
+5. Sichere Passwörter für Grafana und Prometheus festlegen
+6. Zugriff auf Monitoring-Endpunkte einschränken
 
-## Scaling the System
+## Skalierung des Systems
 
-This architecture can scale in several ways:
+Diese Architektur kann auf verschiedene Arten skaliert werden:
 
-1. **Horizontal Scaling**: Add more publishers or subscribers by scaling services
+1. **Horizontale Skalierung**: Mehr Publisher oder Subscriber durch Skalierung von Diensten hinzufügen
    ```bash
    docker-compose up -d --scale python-publisher=3
    ```
 
-2. **Broker Clustering**: Set up multiple MQTT brokers in a cluster for high availability
+2. **Broker-Clustering**: Mehrere MQTT-Broker in einem Cluster für hohe Verfügbarkeit einrichten
    
-3. **Load Balancing**: Add load balancers in front of critical services
+3. **Lastverteilung**: Load Balancer vor kritischen Diensten platzieren
 
-4. **Persistent Storage**: Use external databases for long-term data storage
+4. **Persistenter Speicher**: Externe Datenbanken für langfristige Datenspeicherung verwenden
 
-## Local Development
+## Lokale Entwicklung
 
-### Java Component
+### Java-Komponente
 
 ```bash
-# Build with Maven
+# Mit Maven erstellen
 mvn clean package
 
-# Run locally
+# Lokal ausführen
 java -jar target/mqtt-sinus-publisher-1.0-SNAPSHOT-jar-with-dependencies.jar sensoren/local feedback/local
 ```
 
-### Python Components
+### Python-Komponenten
 
 ```bash
-# Install dependencies
+# Abhängigkeiten installieren
 pip install -r python-publisher/requirements.txt
 
-# Run publisher
+# Publisher ausführen
 python python-publisher/publisher.py
 
-# Run subscriber
+# Subscriber ausführen
 python python-subscriber/subscriber.py
 ```
 
-## Environment Variables
+## Umgebungsvariablen
 
-All components support configuration through environment variables:
+Alle Komponenten unterstützen die Konfiguration über Umgebungsvariablen:
 
-### Core Components
-- `MQTT_BROKER`: MQTT broker address (default: mqtt-broker or localhost:1883)
-- `MQTT_PUB_TOPIC`: Topic to publish to
-- `MQTT_SUB_TOPIC`: Topic to subscribe to
-- `MQTT_FEEDBACK_TOPIC`: Topic for control commands
-- `MQTT_CLIENT_ID`: Unique client identifier
+### Kernkomponenten
+- `MQTT_BROKER`: MQTT-Broker-Adresse (Standard: mqtt-broker oder localhost:1883)
+- `MQTT_PUB_TOPIC`: Topic, in das veröffentlicht werden soll
+- `MQTT_SUB_TOPIC`: Topic, das abonniert werden soll
+- `MQTT_FEEDBACK_TOPIC`: Topic für Steuerbefehle
+- `MQTT_CLIENT_ID`: Eindeutige Client-Kennung
 
-### Monitoring Components
-- Prometheus and exporters use their respective configuration files for settings
+### Monitoring-Komponenten
+- Prometheus und Exporter verwenden ihre jeweiligen Konfigurationsdateien für Einstellungen
 
-## Troubleshooting
+## Fehlerbehebung
 
-### Common Issues
+### Häufige Probleme
 
-1. **Container fails to start**:
-   - Check logs with `docker-compose logs <service-name>`
-   - Verify network connectivity between containers
-   - Ensure required volumes exist
+1. **Container startet nicht**:
+   - Logs mit `docker-compose logs <service-name>` überprüfen
+   - Netzwerkkonnektivität zwischen Containern überprüfen
+   - Sicherstellen, dass erforderliche Volumes existieren
 
-2. **MQTT communication issues**:
-   - Verify the broker is running with `docker-compose ps`
-   - Check broker logs with `docker-compose logs mqtt-broker`
-   - Test connectivity with MQTT CLI
+2. **MQTT-Kommunikationsprobleme**:
+   - Überprüfen, ob der Broker läuft, mit `docker-compose ps`
+   - Broker-Logs mit `docker-compose logs mqtt-broker` überprüfen
+   - Konnektivität mit MQTT CLI testen
 
-3. **Monitoring issues**:
-   - Check Prometheus targets at http://localhost:9090/targets
-   - Verify exporter endpoints are accessible
-   - Check Prometheus logs with `docker-compose logs prometheus`
+3. **Monitoring-Probleme**:
+   - Prometheus-Targets unter http://localhost:9090/targets überprüfen
+   - Exporter-Endpunkte auf Erreichbarkeit prüfen
+   - Prometheus-Logs mit `docker-compose logs prometheus` überprüfen
 
-## Contributing
+## Mitwirken
 
-Contributions to MQTT-ScaleNet are welcome! Please follow these steps:
+Beiträge zu MQTT-ScaleNet sind willkommen! Bitte folgen Sie diesen Schritten:
 
-1. Fork the repository
-2. Create a feature branch
-3. Add your changes
-4. Test thoroughly
-5. Submit a pull request
+1. Repository forken
+2. Feature-Branch erstellen
+3. Änderungen hinzufügen
+4. Gründlich testen
+5. Pull-Request einreichen
 
-## License
+## Lizenz
 
-This project is available under the MIT License.
+Dieses Projekt steht unter der MIT-Lizenz.
 
-## Acknowledgements
+## Danksagungen
 
-- Eclipse Mosquitto for the MQTT broker
-- Prometheus for monitoring
-- Grafana for visualization
-- All Docker image maintainers
+- Eclipse Mosquitto für den MQTT-Broker
+- Prometheus für das Monitoring
+- Grafana für die Visualisierung
+- Alle Docker-Image-Betreuer
