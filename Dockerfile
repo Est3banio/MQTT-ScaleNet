@@ -12,9 +12,9 @@ COPY src /app/src/
 
 # Install Maven
 RUN apt-get update && \
-    apt-get install -y maven && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+  apt-get install -y maven && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
 
 # Build the application
 RUN mvn clean package
