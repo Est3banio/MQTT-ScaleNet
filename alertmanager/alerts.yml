@@ -1,0 +1,69 @@
+groups:
+- name: system_alerts
+  rules:
+  - alert: HighCPULoad
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU load (instance {{ $labels.instance }})"
+      description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: HighMemoryLoad
+    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory load (instance {{ $labels.instance }})"
+      description: "Memory load is > 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: HighDiskUsage
+    expr: (node_filesystem_size_bytes{fstype!="tmpfs"} - node_filesystem_free_bytes{fstype!="tmpfs"}) / node_filesystem_size_bytes{fstype!="tmpfs"} * 100 > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High disk usage (instance {{ $labels.instance }})"
+      description: "Disk usage is > 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+- name: container_alerts
+  rules:
+  - alert: ContainerCPUUsageHigh
+    expr: sum(rate(container_cpu_usage_seconds_total{name!=""}[5m])) by (name) * 100 > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High container CPU usage (container {{ $labels.name }})"
+      description: "Container CPU usage is > 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: ContainerMemoryUsageHigh
+    expr: sum(container_memory_usage_bytes{name!=""}) by (name) / sum(container_spec_memory_limit_bytes{name!=""}) by (name) * 100 > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High container memory usage (container {{ $labels.name }})"
+      description: "Container memory usage is > 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+- name: mqtt_alerts
+  rules:
+  - alert: MQTTBrokerDown
+    expr: up{job="mqtt_exporter"} == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "MQTT Broker is down"
+      description: "The MQTT broker has been down for more than 1 minute."
+
+  - alert: HighMQTTPublishRate
+    expr: sum(rate(mqtt_messages_published_total[5m])) > 1000
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High MQTT publish rate"
+      description: "The MQTT broker is experiencing a high publish rate (>1000 msgs/sec) for more than 5 minutes."

@@ -187,6 +187,7 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./alertmanager/alerts.yml:/etc/prometheus/alerts.yml
       - prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -216,6 +217,22 @@ services:
     networks:
       - mqtt_network
     restart: unless-stopped
+  
+  # cAdvisor for container monitoring
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - mqtt_network
+    restart: unless-stopped
     
   # MQTT Exporter for Mosquitto metrics
   mqtt-exporter:
@@ -225,6 +242,21 @@ services:
       - "9234:9234"
     depends_on:
       - mqtt-broker
+    networks:
+      - mqtt_network
+    restart: unless-stopped
+    
+  # AlertManager for alerts handling
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager/config.yml:/etc/alertmanager/config.yml
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
     networks:
       - mqtt_network
     restart: unless-stopped
