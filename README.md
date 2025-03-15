@@ -1,9 +1,10 @@
-# MQTT Distributed System
+# MQTT-ScaleNet: Distributed MQTT System with Monitoring
 
-This project demonstrates a complete distributed MQTT system with Java and Python components publishing and subscribing to an MQTT broker. The system includes multiple sensor publishers, subscribers, a dedicated MQTT broker, and visualization capabilities with data processing and logging.
+This project demonstrates a complete distributed MQTT system with Java and Python components publishing and subscribing to an MQTT broker. The system includes multiple sensor publishers, subscribers, a dedicated MQTT broker, visualization capabilities with data processing and logging, and comprehensive monitoring with Prometheus and Node Exporter.
 
 ## Components
 
+### Core Components
 - **MQTT Broker**: Eclipse Mosquitto broker for message routing
 - **Java Publishers**: Multiple Java-based sine wave publishers 
 - **Python Sine Publisher**: Python-based sine wave publisher
@@ -14,6 +15,12 @@ This project demonstrates a complete distributed MQTT system with Java and Pytho
 - **MQTT Logger**: Records all MQTT messages with rotating logs
 - **Grafana**: Visualization tool for real-time sensor data
 - **MQTT CLI**: Command-line interface for testing and debugging
+
+### Monitoring Components
+- **Prometheus**: Time-series database for metrics collection and monitoring
+- **Node Exporter**: System metrics collector for host-level monitoring
+- **MQTT Exporter**: Metrics exporter for Mosquitto broker statistics
+- **Grafana Dashboards**: Preconfigured dashboards for system and MQTT metrics
 
 ## Requirements
 
@@ -31,6 +38,7 @@ This project demonstrates a complete distributed MQTT system with Java and Pytho
 - Persistent storage for MQTT messages, logs, and Grafana dashboards
 - Network isolation between components for security
 - Visualization capabilities through Grafana
+- Comprehensive monitoring with Prometheus, Node Exporter, and MQTT Exporter
 - Testing framework to verify system functionality
 
 ## System Architecture
@@ -61,6 +69,18 @@ This project demonstrates a complete distributed MQTT system with Java and Pytho
                          │  MQTT Logger   │     │  Grafana        │
                          │                │     │  Visualization  │
                          └────────────────┘     └─────────────────┘
+                                                       ▲
+                                                       │
+                      ┌────────────────┐               │
+                      │  MQTT Exporter │───────────────┤
+                      └────────────────┘               │
+                              ▲                        │
+                              │                        │
+               ┌──────────────┴─────────┐              │
+               │                        │              │
+        ┌──────▼──────┐         ┌──────▼──────┐        │
+        │ Prometheus  │─────────►Node Exporter│────────┘
+        └─────────────┘         └─────────────┘
 ```
 
 ## Project Structure
@@ -94,10 +114,17 @@ This project demonstrates a complete distributed MQTT system with Java and Pytho
 │   ├── Dockerfile
 │   ├── logger.py
 │   └── requirements.txt
+├── mqtt-exporter/                # MQTT metrics exporter
+│   └── Dockerfile
+├── grafana/                      # Grafana configuration
+│   └── provisioning/            
+│       └── datasources/          # Grafana datasource configuration
+│           └── prometheus.yml    # Prometheus datasource config
 ├── src/                          # Java publisher source code
 ├── Dockerfile                    # Java publisher Dockerfile
 ├── pom.xml                       # Maven configuration
 ├── docker-compose.yml            # Docker Compose configuration
+├── prometheus.yml                # Prometheus configuration
 ├── test-system.sh                # System testing script
 └── README.md
 ```
@@ -124,6 +151,12 @@ This project demonstrates a complete distributed MQTT system with Java and Pytho
 4. **Visualization**:
    - Grafana connects to MQTT broker to display real-time data
    - Multiple dashboards can be created for different data types
+
+5. **Monitoring**:
+   - Node Exporter collects system metrics (CPU, memory, network, disk)
+   - MQTT Exporter collects Mosquitto broker metrics
+   - Prometheus stores all metrics with timestamps
+   - Grafana visualizes system and MQTT metrics
 
 ## Building and Running the Distributed System
 
@@ -183,6 +216,9 @@ docker-compose up -d --scale python-publisher=3
 
 - **MQTT Broker**: Available on port 1883 for MQTT and 9001 for WebSockets
 - **Grafana**: Available at http://localhost:3000 (default credentials: admin/admin)
+- **Prometheus**: Available at http://localhost:9090
+- **Node Exporter Metrics**: Available at http://localhost:9100/metrics
+- **MQTT Exporter Metrics**: Available at http://localhost:9234/metrics
 - **MQTT CLI**: Access via `docker-compose exec mqtt-cli sh`
 
 ## Testing the System
@@ -215,7 +251,9 @@ mosquitto_sub -h localhost -t "sensoren/#" -v
 mosquitto_pub -h localhost -t "feedback/python1" -m "stop"
 ```
 
-## Visualizing Data with Grafana
+## Visualization and Monitoring
+
+### Sensor Data Visualization with Grafana
 
 1. Access Grafana at http://localhost:3000
 2. Login with default credentials (admin/admin)
@@ -228,12 +266,29 @@ mosquitto_pub -h localhost -t "feedback/python1" -m "stop"
    - Configure subscriptions to "sensoren/+"
    - Set refresh rate for real-time updates
 
+### System Monitoring with Prometheus and Grafana
+
+1. Access Prometheus at http://localhost:9090
+   - View targets at http://localhost:9090/targets to ensure all exporters are up
+   - Use PromQL to query metrics directly
+   
+2. Use pre-configured Grafana dashboards for system monitoring:
+   - Node Exporter dashboard for system metrics 
+   - MQTT dashboard for broker metrics
+   
+3. Create custom dashboards:
+   - Combine system metrics with MQTT metrics
+   - Set up alerts for critical thresholds
+   - Configure annotations for important events
+
 ## Docker Volumes
 
 The system includes persistent volumes for:
 - `mosquitto-data`: Stores persistent MQTT messages
 - `mosquitto-log`: Stores MQTT broker logs
 - `grafana-storage`: Stores Grafana dashboards and configurations
+- `mqtt-logs`: Stores MQTT message logs
+- `prometheus-data`: Stores Prometheus time-series data
 
 These volumes ensure data is preserved even if containers are restarted.
 
@@ -245,7 +300,23 @@ The default configuration allows anonymous access to the MQTT broker, which is s
 2. Use secure connections (TLS)
 3. Apply network isolation for containers
 4. Update Docker security options
-5. Set secure passwords for Grafana
+5. Set secure passwords for Grafana and Prometheus
+6. Limit exposure of monitoring endpoints
+
+## Scaling the System
+
+This architecture can scale in several ways:
+
+1. **Horizontal Scaling**: Add more publishers or subscribers by scaling services
+   ```bash
+   docker-compose up -d --scale python-publisher=3
+   ```
+
+2. **Broker Clustering**: Set up multiple MQTT brokers in a cluster for high availability
+   
+3. **Load Balancing**: Add load balancers in front of critical services
+
+4. **Persistent Storage**: Use external databases for long-term data storage
 
 ## Local Development
 
@@ -276,8 +347,52 @@ python python-subscriber/subscriber.py
 
 All components support configuration through environment variables:
 
+### Core Components
 - `MQTT_BROKER`: MQTT broker address (default: mqtt-broker or localhost:1883)
 - `MQTT_PUB_TOPIC`: Topic to publish to
 - `MQTT_SUB_TOPIC`: Topic to subscribe to
 - `MQTT_FEEDBACK_TOPIC`: Topic for control commands
 - `MQTT_CLIENT_ID`: Unique client identifier
+
+### Monitoring Components
+- Prometheus and exporters use their respective configuration files for settings
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Container fails to start**:
+   - Check logs with `docker-compose logs <service-name>`
+   - Verify network connectivity between containers
+   - Ensure required volumes exist
+
+2. **MQTT communication issues**:
+   - Verify the broker is running with `docker-compose ps`
+   - Check broker logs with `docker-compose logs mqtt-broker`
+   - Test connectivity with MQTT CLI
+
+3. **Monitoring issues**:
+   - Check Prometheus targets at http://localhost:9090/targets
+   - Verify exporter endpoints are accessible
+   - Check Prometheus logs with `docker-compose logs prometheus`
+
+## Contributing
+
+Contributions to MQTT-ScaleNet are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch
+3. Add your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is available under the MIT License.
+
+## Acknowledgements
+
+- Eclipse Mosquitto for the MQTT broker
+- Prometheus for monitoring
+- Grafana for visualization
+- All Docker image maintainers
